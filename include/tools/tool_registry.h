@@ -20,6 +20,7 @@
 #include <memory>
 #include <string_view>
 #include <vector>
+#include <string>
 
 class ToolRegistry {
 public:
@@ -70,4 +71,15 @@ private:
     // Your buckets, your element count, and any private helpers you want
     // (for example a rehash function). Store std::unique_ptr<Tool> in the
     // buckets so that pointers handed out by find() survive a resize.
+
+    struct Entry {
+        std::string key;
+        std::unique_ptr<Tool> tool;
+    };
+
+    std::vector<std::vector<Entry>> buckets_;
+    std::size_t count_ =0;
+
+    static std::size_t index_for(std::string_view key, std::size_t nbuckets) noexcept;
+    void grow();    
 };
