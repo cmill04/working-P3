@@ -5,27 +5,35 @@
 // worked trace in Appendix C. std::stack or std::vector are both fine.
 
 #include "tools/calculator.h"
-#include <stack> 
-using Kind = CalcToken::Kind; 
+#include <stack>
+using Kind = CalcToken::Kind;
 
-static int precedence(Kind k) {
-    switch(k){
-        case Kind::Times:
-        case Kind::Divide: return 2; 
-        case Kind::Plus: 
-        case Kind::Minus: return 1; 
-        default: return 0; 
+static int precedence(Kind k)
+{
+    switch (k)
+    {
+    case Kind::Times:
+    case Kind::Divide:
+        return 2;
+    case Kind::Plus:
+    case Kind::Minus:
+        return 1;
+    default:
+        return 0;
     }
 }
 
-static bool is_operator(Kind k) {
-    return k == Kind::Plus || k==Kind::Minus || k==Kind::Times || k==Kind::Divide;
+static bool is_operator(Kind k)
+{
+    return k == Kind::Plus || k == Kind::Minus || k == Kind::Times || k == Kind::Divide;
 }
 
-static bool apply_top(std::stack<double>& values, std::stack<Kind>& ops, std::string* error){
-    if (ops.empty() || values.size() < 2) {
+static bool apply_top(std::stack<double> &values, std::stack<Kind> &ops, std::string *error)
+{
+    if (ops.empty() || values.size() < 2)
+    {
         *error = "Malformed";
-        return false; 
+        return false;
     }
     Kind op = ops.top();
     ops.pop();
@@ -35,25 +43,92 @@ static bool apply_top(std::stack<double>& values, std::stack<Kind>& ops, std::st
     double left = values.top();
     values.pop();
 
-    double result = 0.0; 
-    switch(op) {
-        case Kind::Plus: result = left + right; break;
-        case Kind::Minus: result = left - right; break; 
-        case Kind::Times: result = left * right; break;
-        case Kind::Divide: if (right ==0.0) {
-            *error = "Cant divide by zero";
-            return false; 
+    double result = 0.0;
+    switch (op)
+    {
+    case Kind::Plus:
+        result = left + right;
+        break;
+    case Kind::Minus:
+        result = left - right;
+        break;
+    case Kind::Times:
+        result = left * right;
+        break;
+    case Kind::Divide:
+        if (right == 0.0)
+        {
+            *error = "division by zero";
+            return false;
         }
-        result = left / right; 
-        break; 
-        default: *error = "unknown token on stack";
-        return false; 
+        result = left / right;
+        break;
+    default:
+        *error = "unknown token on stack";
+        return false;
     }
     values.push(result);
-    return true; 
+    return true;
 }
 
-bool calc_evaluate(const std::vector<CalcToken>& tokens, double* out, std::string* error) {
-    std::stack<double> values; 
-    std::stack<Kind> ops; 
+bool calc_evaluate(const std::vector<CalcToken> &tokens, double *out, std::string *error)
+{
+    std::stack<double> values;
+    std::stack<Kind> ops;
+
+    for (const CalcToken &t : tokens)
+    {
+        switch (t.kind)
+        {
+        case Kind::Number:
+            values.push(t.value);
+            break;
+        case Kind::LParen:
+            ops.push(Kind::LParen);
+            break;
+        case Kind::RParen:
+            while (!ops.empty() && ops.top() != Kind::LParen)
+            {
+                if (!apply_top(values, ops, error))
+                    return false;
+            }
+            if (ops.empty())
+            {
+                *error = "mismatched";
+                return false;
+            }
+            ops.pop();
+            break;
+
+        case Kind::Plus:
+        case Kind::Minus:
+        case Kind::Times:
+        case Kind::Divide:
+            while (!ops.empty() && is_operator(ops.top()) &&
+                   precedence(ops.top()) >= precedence(t.kind))
+            {
+                if (!apply_top(values, ops, error))
+                    return false;
+            }
+            ops.push(t.kind);
+            break;
+        }
+    }
+    while (!ops.empty())
+    {
+        if (ops.top() == Kind::LParen)
+        {
+            *error = "mismatched";
+            return false;
+        }
+        if (!apply_top(values, ops, error))
+            return false;
+    }
+    if (values.size() != 1)
+    {
+        *error = "malformed";
+        return false;
+    }
+    *out = values.top();
+    return true;
 }
