@@ -1,8 +1,0 @@
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/harness_core.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/miniharness.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/test_p2.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/test_p3.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/test_loop.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/test.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/edit_cache.dir
-/home/hamme/ece309_p3/working-P3/build/CMakeFiles/rebuild_cache.dir
