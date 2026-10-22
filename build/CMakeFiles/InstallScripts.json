@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/hamme/ece309_p3/working-P3/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
