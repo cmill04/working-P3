@@ -32,7 +32,7 @@ static bool apply_top(std::stack<double> &values, std::stack<Kind> &ops, std::st
 {
     if (ops.empty() || values.size() < 2)
     {
-        *error = "Malformed";
+        *error = "malformed expression";
         return false;
     }
     Kind op = ops.top();
@@ -94,7 +94,7 @@ bool calc_evaluate(const std::vector<CalcToken> &tokens, double *out, std::strin
             }
             if (ops.empty())
             {
-                *error = "mismatched";
+                *error = "mismatched parenthesis";
                 return false;
             }
             ops.pop();
